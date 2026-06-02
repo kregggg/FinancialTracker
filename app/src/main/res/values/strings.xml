@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">FinancialTracker</string>
+    <string-array name="allowance_options">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+    </string-array>
+
+    <string-array name="expense_types">
+        <item>Food</item>
+        <item>Transportation</item>
+        <item>School Supplies</item>
+        <item>Personal Needs</item>
+        <item>Wants</item>
+        <item>Others</item>
+    </string-array>
+</resources>

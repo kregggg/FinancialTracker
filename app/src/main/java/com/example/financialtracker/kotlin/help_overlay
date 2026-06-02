@@ -1,0 +1,50 @@
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+
+class InitializeAccountActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // This is your main layout from earlier
+        setContentView(R.layout.initialize_account_activity)
+
+        // 1. Find the Help button in your main layout
+        val btnHelp = findViewById<Button>(R.id.btnHelp)
+
+        // 2. Set the click listener
+        btnHelp.setOnClickListener {
+            showHelpDialog()
+        }
+    }
+
+    private fun showHelpDialog() {
+        // Create the Dialog object
+        val dialog = Dialog(this)
+
+        // Tell it to use the new XML layout you just created
+        dialog.setContentView(R.layout.dialog_help)
+
+        // Make the background of the dialog window transparent so the rounded corners of your CardView show properly
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        // Ensure the dialog is wide enough (matches the parent width with margins)
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        // Find the Close button INSIDE the dialog and set it to dismiss the dialog
+        val btnClose = dialog.findViewById<Button>(R.id.btnCloseDialog)
+        btnClose.setOnClickListener {
+            dialog.dismiss() // This closes the popup!
+        }
+
+        // Finally, display it to the user
+        dialog.show()
+    }
+}

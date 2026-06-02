@@ -1,0 +1,69 @@
+import android.app.Dialog
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import androidx.recyclerview.widget.RecyclerView
+
+// Inside your RecyclerView Adapter class...
+class ExpenseViewHolder(itemView: View, private val context: Context) : RecyclerView.ViewHolder(itemView) {
+
+    // Variable to track the time of the last click
+    private var lastClickTime: Long = 0
+
+    init {
+        // Set a click listener on the entire row
+        itemView.setOnClickListener {
+            val clickTime = System.currentTimeMillis()
+
+            // If the time between this click and the last click is less than 300 milliseconds...
+            if (clickTime - lastClickTime < 300) {
+                // IT'S A DOUBLE CLICK!
+                showModifyDialog()
+            }
+
+            // Update the last click time
+            lastClickTime = clickTime
+        }
+    }
+
+    private fun showModifyDialog() {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.dialog_modify_expense)
+
+        // Make the background transparent for the rounded corners
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        // Find your buttons inside the dialog
+        val btnCancel = dialog.findViewById<Button>(R.id.btnModifyCancel)
+        val btnRemove = dialog.findViewById<Button>(R.id.btnModifyRemove)
+        val btnSave = dialog.findViewById<Button>(R.id.btnModifySave)
+
+        // Handle Cancel
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // Handle Remove
+        btnRemove.setOnClickListener {
+            // TODO: Add code to delete this row's data from your storage
+            // Then notify your adapter that the item was removed
+            dialog.dismiss()
+        }
+
+        // Handle Save
+        btnSave.setOnClickListener {
+            // TODO: Add code to update the row's data in your storage
+            // Then notify your adapter that the item changed
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+}

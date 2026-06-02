@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/btnBackSettings"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@android:drawable/ic_menu_revert"
+        app:layout_constraintBottom_toBottomOf="@id/tvSettingsTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvSettingsTitle"
+        app:tint="#333333" />
+
+    <TextView
+        android:id="@+id/tvSettingsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Record Income"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/btnBackSettings"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/dividerSettings"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="#E0E0E0"
+        app:layout_constraintTop_toBottomOf="@id/tvSettingsTitle" />
+
+    <TextView
+        android:id="@+id/lblDarkMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Dark Mode"
+        android:textColor="#333333"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dividerSettings" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchDarkMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/lblDarkMode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/lblDarkMode" />
+
+    <TextView
+        android:id="@+id/lblUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Username"
+        android:textColor="#333333"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lblDarkMode" />
+
+    <EditText
+        android:id="@+id/etUsername"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input_outline"
+        android:hint="ex. Juan"
+        android:inputType="textPersonName"
+        android:paddingHorizontal="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#9E9E9E"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/lblUsername" />
+
+    <LinearLayout
+        android:id="@+id/rowAllowanceDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        app:layout_constraintTop_toBottomOf="@id/etUsername">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lblAllowanceType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Allowance Type"
+                android:textColor="#333333"
+                android:textSize="14sp" />
+
+            <Spinner
+                android:id="@+id/spinnerAllowanceType"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input_outline"
+                android:paddingHorizontal="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lblDaysWithClasses"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Days w/ classes"
+                android:textColor="#333333"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etDaysWithClasses"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input_outline"
+                android:hint="5"
+                android:inputType="number"
+                android:paddingHorizontal="12dp"
+                android:textColor="#000000"
+                android:textColorHint="#9E9E9E"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/lblSettingsAllowance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Allowance"
+        android:textColor="#333333"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rowAllowanceDetails" />
+
+    <EditText
+        android:id="@+id/etSettingsAllowance"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input_outline"
+        android:hint="ex. 200"
+        android:inputType="numberDecimal"
+        android:paddingHorizontal="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#9E9E9E"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/lblSettingsAllowance" />
+
+    <LinearLayout
+        android:id="@+id/containerQuickActions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etSettingsAllowance">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnQuickAction1"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="12dp"
+            android:text="Action 1"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            app:backgroundTint="#333333"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnQuickAction2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="12dp"
+            android:text="Action 2"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            app:backgroundTint="#333333"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnQuickAction3"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Action 3"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            app:backgroundTint="#333333"
+            app:cornerRadius="8dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvHelp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:text="Help"
+        android:textColor="#555555"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/btnSubmitSettings"
+        app:layout_constraintEnd_toStartOf="@id/btnSubmitSettings"
+        app:layout_constraintTop_toTopOf="@id/btnSubmitSettings" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmitSettings"
+        android:layout_width="140dp"
+        android:layout_height="54dp"
+        android:layout_marginBottom="32dp"
+        android:text="Submit"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        app:backgroundTint="#333333"
+        app:cornerRadius="8dp"
+        app:layout_constraintBottom_toTopOf="@id/tvCopyrightSettings"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvCopyrightSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Copyright © 2026 kreggg. All rights reserved."
+        android:textColor="#9E9E9E"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
