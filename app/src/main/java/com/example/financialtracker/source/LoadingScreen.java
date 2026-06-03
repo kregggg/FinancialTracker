@@ -6,9 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.financialtracker.source.DashboardActivity;
-import com.example.financialtracker.source.InitializeAccount;
-import com.example.financialtracker.ref.SettingsManager;
+import com.example.financialtracker.database.SettingsManager;
 import com.example.financialtracker.databinding.LoadingScreenActivityBinding;
 
 public class LoadingScreen extends AppCompatActivity {

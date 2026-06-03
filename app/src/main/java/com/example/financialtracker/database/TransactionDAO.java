@@ -29,4 +29,7 @@ public interface TransactionDAO {
 
     @Query("SELECT COALESCE(SUM(amount), 0.0) FROM transactions_table WHERE transactionType = :type AND timestamp >= :startTime")
     double getTotalAmountByTypeSince(String type, long startTime);
+
+    @Query("SELECT * FROM transactions_table WHERE timestamp = :date")
+    List<Transaction> getTransactionByDate(Long date);
 }

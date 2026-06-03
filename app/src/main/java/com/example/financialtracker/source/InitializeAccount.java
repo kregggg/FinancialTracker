@@ -12,7 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.financialtracker.R; // Make sure to import your R class
-import com.example.financialtracker.ref.SettingsManager;
+import com.example.financialtracker.database.SettingsManager;
 import com.example.financialtracker.databinding.InitializeAccountActivityBinding;
 import com.example.financialtracker.databinding.HelpInitializeActivityBinding;
 

@@ -12,9 +12,18 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.financialtracker.database.DataAccess;
 import com.example.financialtracker.databinding.DailyExpensesActivityBinding;
 import com.example.financialtracker.databinding.RecordExpenseActivityBinding; // Generated from your new overlay XML
-import com.example.financialtracker.ref.SettingsManager;
+import com.example.financialtracker.database.SettingsManager;
+import com.example.financialtracker.ref.Transaction;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class DailyExpenses extends AppCompatActivity {
 
@@ -31,6 +40,8 @@ public class DailyExpenses extends AppCompatActivity {
         settingsManager = new SettingsManager(this);
 
         binding.rvExpenses.setLayoutManager(new LinearLayoutManager(this));
+
+        updateStatsPanel();
 
         // --- NAVIGATION & SCREEN TRANSITIONS ---
 
@@ -117,30 +128,60 @@ public class DailyExpenses extends AppCompatActivity {
         dialogBinding.btnSubmitExpense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean validAmount = false, validDesc = false;
                 String descInput = dialogBinding.etExpenseDescription.getText().toString().trim();
                 String amountStr = dialogBinding.etExpenseAmount.getText().toString().trim();
+                double amount = 0;
 
                 // Validation checking guard for empty fields
                 if (descInput.isEmpty()) {
                     dialogBinding.etExpenseDescription.setError("Expense description is required!");
                     dialogBinding.etExpenseDescription.requestFocus();
                     return;
+                } else {
+                    validDesc = true;
                 }
 
                 if (amountStr.isEmpty()) {
                     dialogBinding.etExpenseAmount.setError("Please supply transaction amount price!");
                     dialogBinding.etExpenseAmount.requestFocus();
                     return;
+                } else {
+                    try {
+                        amount = Double.parseDouble(amountStr);
+                        validAmount = true;
+                    } catch (NumberFormatException e){
+                        dialogBinding.etExpenseAmount.setError("Amount cannot contain any  letters or special characters.");
+                    }
                 }
 
-                // TODO: YOUR LOGIC - Parse fields, append transaction to list, subtract cost from current wallet balance:
-                //       double expenseCost = Double.parseDouble(amountStr);
-                //       double updatedBalance = settingsManager.getCurrentBalance() - expenseCost;
-                //       settingsManager.updateCurrentBalance(updatedBalance);
+                if (validDesc && validAmount){
+                    long currentTime = System.currentTimeMillis();
 
-                // TODO: YOUR LOGIC - Notify adapter dataset updates or recalculate metrics on dashboard summary card
+                    String categoryInput = dialogBinding.spinnerExpenseType.getSelectedItem().toString();
 
-                dialog.dismiss(); // Clean finish overlay animation transition
+                    // 1. Package data into the Transaction blueprint model
+                    Transaction newExpense = new Transaction(
+                            descInput,
+                            amount,
+                            categoryInput,
+                            currentTime,
+                            "EXPENSE"
+                    );
+
+                    // 2. Call your consolidated DataAccess instance to write to DB and update wallet preferences
+                    DataAccess.getInstance(DailyExpenses.this).addTransactionAndUpdateBalance(newExpense, DailyExpenses.this);
+
+                    // 3. Sync UI display elements on the parent screen
+                    // Update the wallet balance display string immediately
+                    double updatedBalance = DataAccess.getInstance(DailyExpenses.this).transactionDao().getTotalAmountByTypeSince("INCOME", 0); // placeholder or call settingsManager
+
+                    // Pro Tip: If your DailyExpenses activity has a method to reload the database list
+                    // and refresh layout card text views, call it right here!
+                    // Example: refreshTransactionList();
+
+                    dialog.dismiss(); // Clean finish overlay animation transition
+                }
             }
         });
 
@@ -151,7 +192,7 @@ public class DailyExpenses extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // TODO: Refresh dashboard totals and data arrays
+        updateStatsPanel();
     }
 
     private void quickAction(int num, RecordExpenseActivityBinding dialogBinding) {
@@ -195,5 +236,178 @@ public class DailyExpenses extends AppCompatActivity {
 
         return (today.get(java.util.Calendar.YEAR) == txDate.get(java.util.Calendar.YEAR) &&
                 today.get(java.util.Calendar.DAY_OF_YEAR) == txDate.get(java.util.Calendar.DAY_OF_YEAR));
+    }
+
+    public List<Transaction> getTransactionsToday(transactionTypes types){
+        List<Transaction> all = getAllTransactions();
+        List<Transaction> today = new ArrayList<>();
+
+        for (Transaction transac : all){
+            if (isTransactionFromToday(transac.getTimestamp())){
+                if (types.equals(transactionTypes.ALL)){
+                    today.add(transac);
+                } else if (types.equals(transactionTypes.EXPENSE)){
+                    if (transac.getTransactionType().equalsIgnoreCase("EXPENSE")){
+                        today.add(transac);
+                    }
+                } else if (types.equals(transactionTypes.INCOME)){
+                    if (transac.getTransactionType().equalsIgnoreCase("INCOME")){
+                        today.add(transac);
+                    }
+                }
+            }
+        }
+
+        return today;
+    }
+
+    public void updateStatsPanel(){
+        List<Transaction> spentList = getTransactionsToday(transactionTypes.EXPENSE);
+        List<Long> weekDates = getDatesOfSameWeek(System.currentTimeMillis());
+
+        double spentToday = 0;
+        double spentWeek = 0;
+        double savedWeek = 0;
+
+        // Spent Today
+        for (Transaction transaction : spentList){
+            spentToday += transaction.getAmount();
+        }
+
+        // Spent for this week
+        for (Long date : weekDates){
+            spentWeek += getSpentByDate(date);
+        }
+
+        // Saved for this week
+        for (Long date : weekDates){
+            savedWeek += getIncomeDate(date);
+        }
+        savedWeek -= spentWeek;
+
+        // Assign values
+        binding.tvTotalSpentToday.setText(String.valueOf(spentToday));
+        binding.tvTotalSpentWeek.setText(String.valueOf(spentWeek));
+        binding.tvTotalWeeklySavings.setText(String.valueOf(savedWeek));
+    }
+
+    public double getSpentByDate(Long date){
+        List<Transaction> temp = getTransactionByDate(date);
+        double amount = 0;
+
+        for (Transaction transaction : temp){
+            if (transaction.getTransactionType().equalsIgnoreCase("EXPENSE")){
+                amount += transaction.getAmount();
+            }
+        }
+
+        return amount;
+    }
+
+    public double getIncomeDate(Long date){
+        List<Transaction> temp = getTransactionByDate(date);
+        double amount = 0;
+
+        for (Transaction transaction : temp){
+            if (transaction.getTransactionType().equalsIgnoreCase("INCOME")){
+                amount += transaction.getAmount();
+            }
+        }
+
+        return amount;
+    }
+
+    /**
+     * Takes a database timestamp and returns a list of all 7 calendar dates for that specific week.
+     * (Assumes the week starts on Monday).
+     */
+    public List<Long> getDatesOfSameWeek(long targetTimestamp) {
+        List<Long> weekDates = new ArrayList<>();
+
+        // 1. Create a Calendar instance and set it to the given timestamp
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(targetTimestamp);
+
+        // 2. Adjust the calendar so Monday is considered the first day of the week
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+
+        // 3. Snap the calendar backwards to the Monday of this exact week
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+
+        // 4. Loop 7 times to capture the timestamp of each day, then move forward one day
+        for (int i = 0; i < 7; i++) {
+            weekDates.add(calendar.getTimeInMillis());
+
+            // Push the calendar forward by 1 day for the next loop iteration
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        return weekDates;
+    }
+
+
+    public String getTimeFromTimestamp(long timestamp) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        Date date = new Date(timestamp);
+        return timeFormat.format(date);
+    }
+
+    public String getFormattedDateFromTimestamp(long timestamp) {
+        // Define how you want the date to look (e.g., "June 3, 2026" or "06/03/2026")
+        SimpleDateFormat formatter = new SimpleDateFormat("MMMM d, yyyy", Locale.getDefault());
+
+        // Convert the millisecond timestamp into a Date object
+        Date date = new Date(timestamp);
+
+        // Return the pretty text string
+        return formatter.format(date);
+    }
+
+    public List<Transaction> getAllTransactions(){
+        return DataAccess.getInstance(this).transactionDao().getAllTransactions();
+    }
+
+    public List<Transaction> getTransactionByDate(Long date){
+        return DataAccess.getInstance(this).transactionDao().getTransactionByDate(date);
+    }
+
+    /**
+     * Fetches all transactions from the database and parses them for UI display or metrics.
+     */
+    private void loadAndParseTransactions() {
+        // 1. Fetch the raw list from DataAccess
+        // (Since allowMainThreadQueries() is active in your builder, this runs smoothly right here)
+        List<Transaction> allTransactions = DataAccess.getInstance(this).transactionDao().getAllTransactions();
+
+        // Check if the database returned an empty list
+        if (allTransactions == null || allTransactions.isEmpty()) {
+            allTransactions = new ArrayList<>();
+            // Optional: Handle empty state UI here (e.g., show a "No records found" text view)
+        }
+
+        // 2. Separate them or run analytics (Parsing logic examples)
+        double totalIncomeParsed = 0.0;
+        double totalExpenseParsed = 0.0;
+
+        for (Transaction tx : allTransactions) {
+            if ("EXPENSE".equals(tx.getTransactionType())) {
+                totalExpenseParsed += tx.getAmount();
+            } else if ("INCOME".equals(tx.getTransactionType())) {
+                totalIncomeParsed += tx.getAmount();
+            }
+        }
+
+        // 3. Pass the freshly parsed list to your RecyclerView adapter to display it on screen
+        // Assuming your adapter instance is named transactionAdapter:
+        // transactionAdapter.updateData(allTransactions);
+
+        // 4. Optional: Update dashboard metrics text views if needed
+        // binding.tvTotalSpentToday.setText(String.format("P%.2f", totalExpenseParsed));
+    }
+
+    public enum transactionTypes{
+        EXPENSE,
+        INCOME,
+        ALL
     }
 }

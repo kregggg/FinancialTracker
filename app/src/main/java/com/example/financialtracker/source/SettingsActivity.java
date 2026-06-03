@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.financialtracker.R;
 import com.example.financialtracker.databinding.MainSettingsActivityBinding;
 import com.example.financialtracker.databinding.ActionExpenseActivityBinding;
-import com.example.financialtracker.ref.SettingsManager;
+import com.example.financialtracker.database.SettingsManager;
 
 public class SettingsActivity extends AppCompatActivity {
 

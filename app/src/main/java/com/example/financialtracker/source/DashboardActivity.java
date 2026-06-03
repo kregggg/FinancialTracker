@@ -3,7 +3,7 @@ package com.example.financialtracker.source;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.financialtracker.ref.SettingsManager;
+import com.example.financialtracker.database.SettingsManager;
 import com.example.financialtracker.databinding.MainDashboardActivityBinding;
 
 public class DashboardActivity extends AppCompatActivity {
