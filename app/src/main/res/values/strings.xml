@@ -14,4 +14,11 @@
         <item>Wants</item>
         <item>Others</item>
     </string-array>
+
+    <string-array name="income_sources">
+        <item>Commissions</item>
+        <item>Part Time Job</item>
+        <item>Gifts</item>
+        <item>Additional Allowance</item>
+    </string-array>
 </resources>

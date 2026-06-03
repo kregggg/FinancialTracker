@@ -1,44 +1,44 @@
 package com.example.financialtracker.ref;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "transactions_table")
 public class Transaction {
-    String description;
-    String category;
-    double amount;
-    TransacType type;
 
-    public Transaction(){}
+    @PrimaryKey(autoGenerate = true)
+    private int id;
 
-    public Transaction(String description, String category, double amount, TransacType type){
+    private String description;
+    private double amount;
+    private String category;
+    private long timestamp;
+    private String transactionType; // Will hold "EXPENSE" or "INCOME"
+
+    public Transaction(String description, double amount, String category, long timestamp, String transactionType) {
         this.description = description;
+        this.amount = amount;
         this.category = category;
-        this.amount = amount;
-        this.type = type;
+        this.timestamp = timestamp;
+        this.transactionType = transactionType;
     }
 
-    public void modifyExpense (String description, String category, double amount){
-        if (!description.isEmpty()){
-            this.description = description;
-        }
+    // --- Getters and Setters (Required by Room) ---
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-        if (!category.isEmpty()){
-            this.category = category;
-        }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-        if (amount != 0){
-            this.amount = amount;
-        }
-    }
+    public double getAmount() { return amount; }
+    public void setAmount(double amount) { this.amount = amount; }
 
-    public void receiveAllowance (double amount){
-        this.description = "Allowance";
-        this.category = "Allowance";
-        this.amount = amount;
-        this.type = TransacType.INCOME;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public enum TransacType{
-        INCOME,
-        EXPENSE
-    }
+    public long getTimestamp() { return timestamp; }
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
 
+    public String getTransactionType() { return transactionType; }
+    public void setTransactionType(String transactionType) { this.transactionType = transactionType; }
 }

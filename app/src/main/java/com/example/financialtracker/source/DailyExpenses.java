@@ -6,6 +6,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -82,25 +85,21 @@ public class DailyExpenses extends AppCompatActivity {
         dialogBinding.btnAction1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Autofill logic - Read saved macro 1 data out from settingsManager and apply it to fields:
-                //       String desc = settingsManager.getQuickActionDescription(1);
-                //       double amt = settingsManager.getQuickActionAmount(1);
-                //       dialogBinding.etExpenseDescription.setText(desc);
-                //       dialogBinding.etExpenseAmount.setText(String.valueOf(amt));
+                quickAction(1, dialogBinding);
             }
         });
 
         dialogBinding.btnAction2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Autofill logic for Quick Action 2
+                quickAction(2, dialogBinding);
             }
         });
 
         dialogBinding.btnAction3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Autofill logic for Quick Action 3
+                quickAction(3, dialogBinding);
             }
         });
 
@@ -153,5 +152,48 @@ public class DailyExpenses extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // TODO: Refresh dashboard totals and data arrays
+    }
+
+    private void quickAction(int num, RecordExpenseActivityBinding dialogBinding) {
+        String desc = settingsManager.getQuickActionDescription(num);
+
+        // CLEANER CHECK: Since it returns null when unassigned, just verify if it's not null!
+        if (desc != null) {
+            double amount = settingsManager.getQuickActionAmount(num);
+            String type = settingsManager.getQuickActionType(num);
+
+            dialogBinding.etExpenseDescription.setText(desc);
+            dialogBinding.etExpenseAmount.setText(String.valueOf(amount));
+
+            if (dialogBinding.spinnerExpenseType.getAdapter() != null) {
+                // FIX: Cast to ArrayAdapter<CharSequence> instead of ArrayAdapter<?>
+                ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) dialogBinding.spinnerExpenseType.getAdapter();
+
+                int spinnerPosition = adapter.getPosition(type);
+                if (spinnerPosition >= 0) {
+                    dialogBinding.spinnerExpenseType.setSelection(spinnerPosition);
+                }
+            }
+        } else {
+            // Fallback Toast notification if the slot has no configuration values
+            Toast.makeText(
+                    DailyExpenses.this,
+                    "No action saved for Action " + num + ". Create a Quick action in the settings.",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+    /**
+     * Checks if a transaction's timestamp falls within today's calendar date.
+     */
+    private boolean isTransactionFromToday(long transactionTimestamp) {
+        java.util.Calendar today = java.util.Calendar.getInstance();
+
+        java.util.Calendar txDate = java.util.Calendar.getInstance();
+        txDate.setTimeInMillis(transactionTimestamp);
+
+        return (today.get(java.util.Calendar.YEAR) == txDate.get(java.util.Calendar.YEAR) &&
+                today.get(java.util.Calendar.DAY_OF_YEAR) == txDate.get(java.util.Calendar.DAY_OF_YEAR));
     }
 }

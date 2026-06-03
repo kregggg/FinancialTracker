@@ -92,6 +92,7 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_input_outline"
             android:paddingHorizontal="12dp"
+            android:entries="@array/income_sources"
             app:layout_constraintTop_toBottomOf="@id/lblSource" />
 
         <LinearLayout

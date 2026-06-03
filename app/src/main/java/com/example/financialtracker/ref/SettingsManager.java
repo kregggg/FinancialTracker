@@ -74,7 +74,7 @@ public class SettingsManager {
         return prefs.getBoolean(KEY_DARK_MODE, false);
     }
 
-    // --- NEW LIVE BALANCE MUTATION GETTERS & SETTERS ---
+    // --- LIVE BALANCE MUTATION GETTERS & SETTERS ---
 
     /**
      * Retrieves the current available cash remaining in the wallet.
@@ -105,8 +105,11 @@ public class SettingsManager {
                 .apply();
     }
 
+    /**
+     * MODIFIED: Returns null if no custom description has been saved yet.
+     */
     public String getQuickActionDescription(int actionNumber) {
-        return prefs.getString(PREFIX_QA_DESC + actionNumber, "Action " + actionNumber);
+        return prefs.getString(PREFIX_QA_DESC + actionNumber, null);
     }
 
     public double getQuickActionAmount(int actionNumber) {
