@@ -1,5 +1,6 @@
 package com.example.financialtracker.source;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -286,9 +287,9 @@ public class DailyExpenses extends AppCompatActivity {
         savedWeek -= spentWeek;
 
         // Assign values
-        binding.tvTotalSpentToday.setText(String.valueOf(spentToday));
-        binding.tvTotalSpentWeek.setText(String.valueOf(spentWeek));
-        binding.tvTotalWeeklySavings.setText(String.valueOf(savedWeek));
+        binding.tvTotalSpentToday.setText(String.format(Locale.getDefault(), "%.2f", spentToday));
+        binding.tvTotalSpentWeek.setText(String.format(Locale.getDefault(), "%.2f", spentWeek));
+        binding.tvTotalWeeklySavings.setText(String.format(Locale.getDefault(), "%.2f", savedWeek));
     }
 
     public double getSpentByDate(Long date){
@@ -369,40 +370,6 @@ public class DailyExpenses extends AppCompatActivity {
 
     public List<Transaction> getTransactionByDate(Long date){
         return DataAccess.getInstance(this).transactionDao().getTransactionByDate(date);
-    }
-
-    /**
-     * Fetches all transactions from the database and parses them for UI display or metrics.
-     */
-    private void loadAndParseTransactions() {
-        // 1. Fetch the raw list from DataAccess
-        // (Since allowMainThreadQueries() is active in your builder, this runs smoothly right here)
-        List<Transaction> allTransactions = DataAccess.getInstance(this).transactionDao().getAllTransactions();
-
-        // Check if the database returned an empty list
-        if (allTransactions == null || allTransactions.isEmpty()) {
-            allTransactions = new ArrayList<>();
-            // Optional: Handle empty state UI here (e.g., show a "No records found" text view)
-        }
-
-        // 2. Separate them or run analytics (Parsing logic examples)
-        double totalIncomeParsed = 0.0;
-        double totalExpenseParsed = 0.0;
-
-        for (Transaction tx : allTransactions) {
-            if ("EXPENSE".equals(tx.getTransactionType())) {
-                totalExpenseParsed += tx.getAmount();
-            } else if ("INCOME".equals(tx.getTransactionType())) {
-                totalIncomeParsed += tx.getAmount();
-            }
-        }
-
-        // 3. Pass the freshly parsed list to your RecyclerView adapter to display it on screen
-        // Assuming your adapter instance is named transactionAdapter:
-        // transactionAdapter.updateData(allTransactions);
-
-        // 4. Optional: Update dashboard metrics text views if needed
-        // binding.tvTotalSpentToday.setText(String.format("P%.2f", totalExpenseParsed));
     }
 
     public enum transactionTypes{
