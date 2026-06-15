@@ -15,6 +15,8 @@ import com.example.financialtracker.databinding.MainSettingsActivityBinding;
 import com.example.financialtracker.databinding.ActionExpenseActivityBinding;
 import com.example.financialtracker.database.SettingsManager;
 
+import java.util.Locale;
+
 public class SettingsActivity extends AppCompatActivity {
 
     private MainSettingsActivityBinding binding;
@@ -36,9 +38,11 @@ public class SettingsActivity extends AppCompatActivity {
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerAllowanceType.setAdapter(adapter);
+        initializeValues(adapter);
 
         // Synchronize settings menu macro layouts with persistent cache state values
         updateQuickActionButtons();
+        binding.switchDarkMode.setEnabled(false); // TODO: add dark mode
 
         // --- NAVIGATION & SCREEN TRANSITIONS ---
 
@@ -52,10 +56,12 @@ public class SettingsActivity extends AppCompatActivity {
         binding.btnSubmitSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Optional TODO: Map and validate your user modifications here before saving
-                Intent intent = new Intent(SettingsActivity.this, DashboardActivity.class);
-                startActivity(intent);
-                finish();
+                boolean valid = validateSave();
+                if (valid){
+                    Intent intent = new Intent(SettingsActivity.this, DashboardActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
 
@@ -190,5 +196,101 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    /*
+    TODO:
+        switch off button for dark mode
+        set the initial content of the following
+            - username (etUsername)
+            - allowance type (spinnerAllowanceType)
+            - days with classes (etDaysWithClasses)
+            - allocated allowance per time frame (etSettingsAllowance)
+        set action for button submit
+     */
+
+    public void initializeValues(ArrayAdapter<CharSequence> adapter){
+        updateQuickActionButtons();
+
+        binding.etUsername.setText(settingsManager.getUsername());
+        binding.etDaysWithClasses.setText(String.valueOf(settingsManager.getDaysWithClasses()));
+        binding.etSettingsAllowance.setText(String.format(Locale.US, "%.2f", settingsManager.getAllowanceAmount()));
+
+        String savedAllowanceType = settingsManager.getAllowanceType();
+        if (savedAllowanceType != null) {
+            int pos = adapter.getPosition(savedAllowanceType);
+            if (pos >= 0) binding.spinnerAllowanceType.setSelection(pos);
+        }
+    }
+
+    public boolean validateSave(){
+        // Username
+        binding.etUsername.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                String username = binding.etUsername.getText().toString().trim();
+                if (username.isEmpty()) {
+                    binding.etUsername.setError("Please provide a username!");
+                }
+            }
+        });
+
+        // Allowance Type
+        String type = binding.spinnerAllowanceType.getSelectedItem().toString();
+
+        // Days with classes
+        binding.etDaysWithClasses.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus){
+                try {
+                    int days = 0;
+                    String temp = binding.etDaysWithClasses.getText().toString().trim();
+                    if (temp.isEmpty()){
+                        binding.etDaysWithClasses.setError("Please fill in this field!");
+                    } else {
+                        days = Integer.parseInt(temp);
+
+                        if (days >= 7){
+                            binding.etDaysWithClasses.setError("Days with classes cannot exceed 7!");
+                        } else if (days <= 0 && binding.spinnerAllowanceType.getSelectedItem().toString().equalsIgnoreCase("DAILY")){
+                            binding.etDaysWithClasses.setError("You are required to have days with classes if allowance is set to daily.");
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    binding.etDaysWithClasses.setError("Days with classes field cannot contain letters or special characters!");
+                }
+            }
+        });
+
+        // Allowance per allocation
+        binding.etSettingsAllowance.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus){
+                try {
+                    String temp = binding.etSettingsAllowance.getText().toString().trim();
+                    double allowance = 0;
+
+                    if (temp.isEmpty()){
+                        binding.etSettingsAllowance.setError("Please fill in this field!");
+                    } else {
+                        allowance = Double.parseDouble(temp);
+
+                        if (allowance < 0){
+                            binding.etSettingsAllowance.setError("Allowance cannot be set to a negative value!");
+                        }
+                    }
+                } catch (NumberFormatException e){
+                    binding.etSettingsAllowance.setError("Please fill out this field");
+
+                }
+            }
+        });
+
+        // Save changes
+        String username = (binding.etUsername.getText().toString().isEmpty() ? binding.etUsername.getText().toString().trim() : null);
+        int days = (binding.etDaysWithClasses.getText().toString().isEmpty() ? Integer.parseInt(binding.etDaysWithClasses.getText().toString().trim()) : -1);
+        double allowance = (binding.etSettingsAllowance.getText().toString().isEmpty() ? Double.parseDouble(binding.etSettingsAllowance.getText().toString().trim()) : -1);
+        double currentBalance = settingsManager.getCurrentBalance();
+
+        settingsManager.saveSettings(username, type, days, allowance, currentBalance, false);
+
+        return true;
     }
 }
