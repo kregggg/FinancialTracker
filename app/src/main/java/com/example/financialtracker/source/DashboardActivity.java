@@ -1,5 +1,6 @@
 package com.example.financialtracker.source;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,8 +34,8 @@ public class DashboardActivity extends AppCompatActivity {
 
         // 2. Set up navigation click listeners for each of your new menu cards
         binding.cardDailyExpenses.setOnClickListener(v -> {
-            // TODO: Intent intent = new Intent(this, DailyExpensesActivity.class);
-            // startActivity(intent);
+            Intent intent = new Intent(this, DailyExpenses.class);
+            startActivity(intent);
         });
 
         binding.cardRecordIncome.setOnClickListener(v -> {
@@ -46,7 +47,8 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         binding.cardSettings.setOnClickListener(v -> {
-            // TODO: Handle configuration setup modifications
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         });
     }
 }

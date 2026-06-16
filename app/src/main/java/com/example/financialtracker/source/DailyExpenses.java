@@ -18,6 +18,7 @@ import com.example.financialtracker.databinding.DailyExpensesActivityBinding;
 import com.example.financialtracker.databinding.RecordExpenseActivityBinding; // Generated from your new overlay XML
 import com.example.financialtracker.database.SettingsManager;
 import com.example.financialtracker.ref.Transaction;
+import com.example.financialtracker.ref.TransactionAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,43 +31,30 @@ public class DailyExpenses extends AppCompatActivity {
 
     private DailyExpensesActivityBinding binding;
     private SettingsManager settingsManager;
+    private TransactionAdapter transactionAdapter;
+    private java.util.ArrayList<Transaction> expenseList = new java.util.ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = DailyExpensesActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         settingsManager = new SettingsManager(this);
 
+        // FIX 1: Always set up your LayoutManager and Adapter BEFORE loading data panels
         binding.rvExpenses.setLayoutManager(new LinearLayoutManager(this));
+        transactionAdapter = new TransactionAdapter(expenseList);
+        binding.rvExpenses.setAdapter(transactionAdapter);
 
+        // Now it is safe to load data because the adapter is ready!
         updateStatsPanel();
+        updateTransactionTable();
 
         // --- NAVIGATION & SCREEN TRANSITIONS ---
-
-        binding.btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        binding.btnCalendar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: Put transitional calendar picker dialog initialization code here
-            }
-        });
-
-        // UPDATED: Triggers the dialog modal overlay transition layout instead of opening a new Activity
-        binding.btnAddExpense.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showRecordExpenseDialog();
-            }
-        });
+        binding.btnBack.setOnClickListener(v -> finish());
+        binding.btnCalendar.setOnClickListener(v -> { /* TODO */ });
+        binding.btnAddExpense.setOnClickListener(v -> showRecordExpenseDialog());
     }
 
     /**
@@ -194,6 +182,7 @@ public class DailyExpenses extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateStatsPanel();
+        updateTransactionTable();
     }
 
     private void quickAction(int num, RecordExpenseActivityBinding dialogBinding) {
@@ -262,34 +251,56 @@ public class DailyExpenses extends AppCompatActivity {
         return today;
     }
 
-    public void updateStatsPanel(){
-        List<Transaction> spentList = getTransactionsToday(transactionTypes.EXPENSE);
-        List<Long> weekDates = getDatesOfSameWeek(System.currentTimeMillis());
+    public void updateStatsPanel() {
+        // Fetch from database once to maximize processing speed performance
+        List<Transaction> allTransactions = getAllTransactions();
+
+        // Get the exact start of this week (Monday at 12:00:00 AM)
+        Calendar cal = Calendar.getInstance();
+        cal.setFirstDayOfWeek(Calendar.MONDAY);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long startOfWeekMillis = cal.getTimeInMillis();
+
+        // Get the exact end of this week (Sunday at 11:59:59 PM)
+        cal.add(Calendar.DAY_OF_WEEK, 7);
+        long endOfWeekMillis = cal.getTimeInMillis();
 
         double spentToday = 0;
         double spentWeek = 0;
         double savedWeek = 0;
 
-        // Spent Today
-        for (Transaction transaction : spentList){
-            spentToday += transaction.getAmount();
+        // Parse everything inside a single local memory loop step
+        for (Transaction transaction : allTransactions) {
+            long txTime = transaction.getTimestamp();
+            boolean isExpense = "EXPENSE".equalsIgnoreCase(transaction.getTransactionType());
+            boolean isIncome = "INCOME".equalsIgnoreCase(transaction.getTransactionType());
+
+            // 1. Calculate Today's stats
+            if (isTransactionFromToday(txTime) && isExpense) {
+                spentToday += transaction.getAmount();
+            }
+
+            // 2. Calculate Week's stats
+            if (txTime >= startOfWeekMillis && txTime < endOfWeekMillis) {
+                if (isExpense) {
+                    spentWeek += transaction.getAmount();
+                } else if (isIncome) {
+                    savedWeek += transaction.getAmount();
+                }
+            }
         }
 
-        // Spent for this week
-        for (Long date : weekDates){
-            spentWeek += getSpentByDate(date);
-        }
-
-        // Saved for this week
-        for (Long date : weekDates){
-            savedWeek += getIncomeDate(date);
-        }
+        // Final balance calculation
         savedWeek -= spentWeek;
 
-        // Assign values
-        binding.tvTotalSpentToday.setText(String.format(Locale.getDefault(), "%.2f", spentToday));
-        binding.tvTotalSpentWeek.setText(String.format(Locale.getDefault(), "%.2f", spentWeek));
-        binding.tvTotalWeeklySavings.setText(String.format(Locale.getDefault(), "%.2f", savedWeek));
+        // Assign uniform layout display values with currency indicator text
+        binding.tvTotalSpentToday.setText(String.format(Locale.US, "P%.2f", spentToday));
+        binding.tvTotalSpentWeek.setText(String.format(Locale.US, "P%.2f", spentWeek));
+        binding.tvTotalWeeklySavings.setText(String.format(Locale.US, "P%.2f", savedWeek));
     }
 
     public double getSpentByDate(Long date){
@@ -346,6 +357,14 @@ public class DailyExpenses extends AppCompatActivity {
         return weekDates;
     }
 
+    public void updateTransactionTable() {
+        List<Transaction> today = getTransactionsToday(transactionTypes.ALL);
+
+        // Feed the parsed array data straight to your adapter
+        if (transactionAdapter != null) {
+            transactionAdapter.updateData(today);
+        }
+    }
 
     public String getTimeFromTimestamp(long timestamp) {
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
