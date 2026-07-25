@@ -16,6 +16,7 @@
     </string-array>
 
     <string-array name="income_sources">
+        <item>Allowance</item>
         <item>Commissions</item>
         <item>Part Time Job</item>
         <item>Gifts</item>

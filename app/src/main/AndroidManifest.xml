@@ -25,9 +25,10 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".source.InitializeAccount"
-            android:exported="false" />
+        <activity android:name=".source.InitializeAccount" android:exported="false" />
+        <activity android:name=".source.RecordMenu" android:exported="false" />
+        <activity android:name=".source.DailyExpenses" android:exported="false" />
+        <activity android:name=".source.SettingsActivity" android:exported="false" />
     </application>
 
 </manifest>

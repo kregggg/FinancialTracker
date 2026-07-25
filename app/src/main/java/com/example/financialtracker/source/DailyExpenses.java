@@ -32,7 +32,7 @@ public class DailyExpenses extends AppCompatActivity {
     private DailyExpensesActivityBinding binding;
     private SettingsManager settingsManager;
     private TransactionAdapter transactionAdapter;
-    private java.util.ArrayList<Transaction> expenseList = new java.util.ArrayList<>();
+    private ArrayList<Transaction> expenseList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class DailyExpenses extends AppCompatActivity {
 
         // --- NAVIGATION & SCREEN TRANSITIONS ---
         binding.btnBack.setOnClickListener(v -> finish());
-        binding.btnCalendar.setOnClickListener(v -> { /* TODO */ });
+        binding.btnCalendar.setOnClickListener(v -> { /* TODO: view weekly summary of expenses */ });
         binding.btnAddExpense.setOnClickListener(v -> showRecordExpenseDialog());
     }
 
@@ -165,9 +165,8 @@ public class DailyExpenses extends AppCompatActivity {
                     // Update the wallet balance display string immediately
                     double updatedBalance = DataAccess.getInstance(DailyExpenses.this).transactionDao().getTotalAmountByTypeSince("INCOME", 0); // placeholder or call settingsManager
 
-                    // Pro Tip: If your DailyExpenses activity has a method to reload the database list
-                    // and refresh layout card text views, call it right here!
-                    // Example: refreshTransactionList();
+                    updateStatsPanel();
+                    updateTransactionTable();
 
                     dialog.dismiss(); // Clean finish overlay animation transition
                 }
