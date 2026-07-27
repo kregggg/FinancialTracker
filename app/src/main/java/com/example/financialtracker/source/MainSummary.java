@@ -41,10 +41,8 @@ public class MainSummary extends AppCompatActivity {
 
         binding.btnBackExpenseSummary.setOnClickListener(v -> finish());
 
-        binding.btnViewWeeklyRecords.setOnClickListener(v -> {
-            // TODO: WeeklyRecords activity isn't built yet — see earlier checklist gap.
-            // startActivity(new Intent(this, WeeklyRecords.class));
-        });
+        binding.btnViewWeeklyRecords.setOnClickListener(v ->
+                startActivity(new Intent(this, WeeklyRecords.class)));
 
         refreshSummary();
     }
