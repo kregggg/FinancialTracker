@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.financialtracker.R;
 import com.example.financialtracker.databinding.MainSettingsActivityBinding;
-import com.example.financialtracker.databinding.ActionExpenseActivityBinding;
+import com.example.financialtracker.databinding.QuickactionExpenseActivityBinding;
 import com.example.financialtracker.database.SettingsManager;
 
 import java.util.Locale;
@@ -115,7 +115,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void showQuickActionDialog(final int actionNumber) {
         Dialog dialog = new Dialog(this);
 
-        ActionExpenseActivityBinding dialogBinding = ActionExpenseActivityBinding.inflate(getLayoutInflater());
+        QuickactionExpenseActivityBinding dialogBinding = QuickactionExpenseActivityBinding.inflate(getLayoutInflater());
         dialog.setContentView(dialogBinding.getRoot());
 
         if (dialog.getWindow() != null) {

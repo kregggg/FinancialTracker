@@ -40,6 +40,22 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    sourceSets {
+        getByName("main") {
+            res.setSrcDirs(
+                listOf(
+                    "src/main/res",
+                    "src/main/res-layouts/dashboard",
+                    "src/main/res-layouts/expenses",
+                    "src/main/res-layouts/income",
+                    "src/main/res-layouts/summary",
+                    "src/main/res-layouts/settings",
+                    "src/main/res-layouts/shared"
+                )
+            )
+        }
+    }
 }
 
 dependencies {
@@ -53,5 +69,4 @@ dependencies {
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
