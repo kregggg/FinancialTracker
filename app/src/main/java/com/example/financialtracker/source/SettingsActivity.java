@@ -1,19 +1,28 @@
 package com.example.financialtracker.source;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.financialtracker.R;
+import com.example.financialtracker.database.DataBackupManager;
 import com.example.financialtracker.databinding.MainSettingsActivityBinding;
 import com.example.financialtracker.databinding.QuickactionExpenseActivityBinding;
 import com.example.financialtracker.database.SettingsManager;
+
+import org.json.JSONObject;
 
 import java.util.Locale;
 
@@ -21,6 +30,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     private MainSettingsActivityBinding binding;
     private SettingsManager settingsManager;
+    private ActivityResultLauncher<String> exportLauncher;
+    private ActivityResultLauncher<String[]> importLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +105,17 @@ public class SettingsActivity extends AppCompatActivity {
                 showQuickActionDialog(3);
             }
         });
+
+        // inside onCreate:
+        exportLauncher = registerForActivityResult(new ActivityResultContracts.CreateDocument("application/json"), uri -> {
+            if (uri != null) exportBackup(uri);
+        });
+        importLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
+            if (uri != null) importBackup(uri);
+        });
+
+        binding.btnExportData.setOnClickListener(v -> exportLauncher.launch("financial_tracker_backup.json"));
+        binding.btnImportData.setOnClickListener(v -> importLauncher.launch(new String[]{"application/json"}));
     }
 
     /**
@@ -292,5 +314,32 @@ public class SettingsActivity extends AppCompatActivity {
         settingsManager.saveSettings(username, type, days, allowance, currentBalance, false);
 
         return true;
+    }
+
+    private void exportBackup(Uri uri) {
+        try {
+            DataBackupManager.writeToUri(this, uri, DataBackupManager.buildExportJson(this));
+            Toast.makeText(this, "Data exported successfully!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Export failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void importBackup(Uri uri) {
+        new AlertDialog.Builder(this)
+                .setTitle("Import Data")
+                .setMessage("This will replace all current settings and transactions with this backup file. Continue?")
+                .setPositiveButton("Import", (dialog, which) -> {
+                    try {
+                        JSONObject data = DataBackupManager.readFromUri(this, uri);
+                        DataBackupManager.applyImportedData(this, data);
+                        Toast.makeText(this, "Data imported successfully!", Toast.LENGTH_SHORT).show();
+                        recreate(); // reload this screen so every field reflects the restored settings
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Import failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 }

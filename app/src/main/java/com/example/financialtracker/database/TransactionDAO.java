@@ -32,4 +32,10 @@ public interface TransactionDAO {
 
     @Query("SELECT * FROM transactions_table WHERE timestamp = :date")
     List<Transaction> getTransactionByDate(Long date);
+
+    @Query("DELETE FROM transactions_table")
+    void deleteAllTransactions();
+
+    @Insert
+    void insertAll(List<Transaction> transactions); // Room accepts a List directly on @Insert
 }

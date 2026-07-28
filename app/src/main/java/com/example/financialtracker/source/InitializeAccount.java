@@ -4,22 +4,30 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter; // Make sure this is imported
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.financialtracker.R; // Make sure to import your R class
+import com.example.financialtracker.database.DataBackupManager;
 import com.example.financialtracker.database.SettingsManager;
 import com.example.financialtracker.databinding.InitializeAccountActivityBinding;
 import com.example.financialtracker.databinding.HelpInitializeActivityBinding;
+
+import org.json.JSONObject;
 
 public class InitializeAccount extends AppCompatActivity {
 
     private SettingsManager settingsManager;
     private InitializeAccountActivityBinding binding;
+    private ActivityResultLauncher<String[]> importLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +65,13 @@ public class InitializeAccount extends AppCompatActivity {
                 showHelpOverlay();
             }
         });
+
+        // inside onCreate, alongside your other listener setup:
+        importLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
+            if (uri != null) importBackup(uri);
+        });
+
+        binding.btnImportData.setOnClickListener(v -> importLauncher.launch(new String[]{"application/json"}));
     }
 
     private void saveUserInitializationData() {
@@ -192,5 +207,23 @@ public class InitializeAccount extends AppCompatActivity {
 
         // Show the overlay on the screen
         helpDialog.show();
+    }
+
+    private void importBackup(Uri uri) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Import Data")
+                .setMessage("This will replace any existing data with this backup file. Continue?")
+                .setPositiveButton("Import", (dialog, which) -> {
+                    try {
+                        JSONObject data = DataBackupManager.readFromUri(this, uri);
+                        DataBackupManager.applyImportedData(this, data);
+                        Toast.makeText(this, "Data imported successfully!", Toast.LENGTH_SHORT).show();
+                        navigateToDashboard(); // skip manual setup — settings came from the file
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Import failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 }

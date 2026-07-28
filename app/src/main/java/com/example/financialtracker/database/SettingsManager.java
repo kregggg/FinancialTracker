@@ -134,4 +134,26 @@ public class SettingsManager {
     public void clearData() {
         prefs.edit().clear().apply();
     }
+
+    public double getStartingBalance() {
+        return (double) prefs.getFloat(KEY_STARTING_BALANCE, 0.0f);
+    }
+
+    /**
+     * Restores every field exactly as given — unlike saveSettings(), this does NOT
+     * reset the current balance to the allowance amount. Import-only; never call
+     * this from the normal setup/settings save flow.
+     */
+    public void restoreSettings(String username, String allowanceType, int days, double allowance,
+                                double startingBalance, double currentBalance, boolean isDarkMode) {
+        prefs.edit()
+                .putString(KEY_USERNAME, username)
+                .putString(KEY_ALLOWANCE_TYPE, allowanceType)
+                .putInt(KEY_DAYS_WITH_CLASSES, days)
+                .putFloat(KEY_ALLOWANCE_AMOUNT, (float) allowance)
+                .putFloat(KEY_STARTING_BALANCE, (float) startingBalance)
+                .putFloat(KEY_CURRENT_BALANCE, (float) currentBalance)
+                .putBoolean(KEY_DARK_MODE, isDarkMode)
+                .apply();
+    }
 }
