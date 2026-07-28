@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinancialTracker">
 
-        <activity android:name=".source.DashboardActivity" android:exported="false" />
+        <activity android:name=".source.Dashboard" android:exported="false" />
 
         <activity
             android:name=".source.LoadingScreen" android:exported="true">
@@ -25,7 +25,7 @@
         <activity android:name=".source.InitializeAccount" android:exported="false"/>
         <activity android:name=".source.RecordMenu" android:exported="false"/>
         <activity android:name=".source.DailyExpenses" android:exported="false"/>
-        <activity android:name=".source.SettingsActivity" android:exported="false"/>
+        <activity android:name=".source.Settings" android:exported="false"/>
         <activity android:name=".source.MainSummary" android:exported="false"/>
         <activity android:name=".source.WeeklyRecords" android:exported="false"/>
         <activity android:name=".source.DayOverview" android:exported="false"/>

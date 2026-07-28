@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FinancialTracker</string>
+    <string name="app_name">Money Keg</string>
     <string-array name="allowance_options">
         <item>Daily</item>
         <item>Weekly</item>

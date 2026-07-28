@@ -3,6 +3,7 @@ package com.example.financialtracker.source;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -27,7 +28,7 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 
-public class SettingsActivity extends AppCompatActivity {
+public class Settings extends AppCompatActivity {
 
     private MainSettingsActivityBinding binding;
     private SettingsManager settingsManager;
@@ -54,7 +55,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Synchronize settings menu macro layouts with persistent cache state values
         updateQuickActionButtons();
-        binding.switchDarkMode.setEnabled(false); // TODO: add dark mode
+        updateDarkModeIndicator();
 
         // --- NAVIGATION & SCREEN TRANSITIONS ---
 
@@ -70,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 boolean valid = validateSave();
                 if (valid){
-                    Intent intent = new Intent(SettingsActivity.this, DashboardActivity.class);
+                    Intent intent = new Intent(Settings.this, Dashboard.class);
                     startActivity(intent);
                     finish();
                 }
@@ -117,6 +118,12 @@ public class SettingsActivity extends AppCompatActivity {
 
         binding.btnExportData.setOnClickListener(v -> exportLauncher.launch("financial_tracker_backup.json"));
         binding.btnImportData.setOnClickListener(v -> importLauncher.launch(new String[]{"application/json"}));
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        updateDarkModeIndicator();
     }
 
     /**
@@ -363,5 +370,18 @@ public class SettingsActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    /**
+     * Dark mode here is controlled by the OS (Force Dark), not a per-app setting —
+     * so this switch is read-only. It just reflects whatever the system is currently
+     * doing, rather than letting the user flip something that wouldn't do anything.
+     */
+    private void updateDarkModeIndicator() {
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        boolean isDarkModeActive = (nightModeFlags == Configuration.UI_MODE_NIGHT_YES);
+
+        binding.switchDarkMode.setChecked(isDarkModeActive);
+        binding.switchDarkMode.setEnabled(false);
     }
 }

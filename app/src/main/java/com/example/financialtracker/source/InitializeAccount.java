@@ -169,7 +169,7 @@ public class InitializeAccount extends AppCompatActivity {
     }
 
     private void navigateToDashboard() {
-        Intent intent = new Intent(this, DashboardActivity.class);
+        Intent intent = new Intent(this, Dashboard.class);
         startActivity(intent);
         finish(); // Closes the setup screen so they can't hit the back button to return
     }

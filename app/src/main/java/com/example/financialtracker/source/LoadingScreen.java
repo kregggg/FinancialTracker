@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.financialtracker.database.SettingsManager;
 import com.example.financialtracker.databinding.LoadingScreenActivityBinding;
@@ -16,6 +17,13 @@ public class LoadingScreen extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SettingsManager settingsManager = new SettingsManager(this);
+        AppCompatDelegate.setDefaultNightMode(
+                settingsManager.isDarkModeEnabled()
+                        ? AppCompatDelegate.MODE_NIGHT_YES
+                        : AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        );
+
         super.onCreate(savedInstanceState);
 
         // Setup View Binding
@@ -51,7 +59,7 @@ public class LoadingScreen extends AppCompatActivity {
 
                 if (hasAccount) {
                     // Route to Dashboard if they are set up
-                    intent = new Intent(LoadingScreen.this, DashboardActivity.class);
+                    intent = new Intent(LoadingScreen.this, Dashboard.class);
                 } else {
                     // Route to Initialization if they are brand new
                     intent = new Intent(LoadingScreen.this, InitializeAccount.class);

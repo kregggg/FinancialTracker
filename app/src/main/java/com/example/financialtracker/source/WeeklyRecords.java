@@ -60,29 +60,27 @@ public class WeeklyRecords extends AppCompatActivity {
     private List<WeekRecord> buildWeekList(List<Transaction> transactions) {
         List<WeekRecord> weeks = new ArrayList<>();
 
-        if (transactions.isEmpty()) {
-            return weeks; // brand-new account, no records yet — empty list, no crash
-        }
-
-        long earliestTimestamp = Long.MAX_VALUE;
-        for (Transaction t : transactions) {
-            if (t.getTimestamp() < earliestTimestamp) {
-                earliestTimestamp = t.getTimestamp();
-            }
-        }
-
-        long earliestWeekStart = getStartOfWeekMillis(earliestTimestamp);
         long currentWeekStart = getStartOfWeekMillis(System.currentTimeMillis());
+        long earliestWeekStart = currentWeekStart; // default when there's no data yet: just the current week
+
+        if (!transactions.isEmpty()) {
+            long earliestTimestamp = Long.MAX_VALUE;
+            for (Transaction t : transactions) {
+                if (t.getTimestamp() < earliestTimestamp) {
+                    earliestTimestamp = t.getTimestamp();
+                }
+            }
+            earliestWeekStart = getStartOfWeekMillis(earliestTimestamp);
+        }
 
         int totalWeeks = (int) ((currentWeekStart - earliestWeekStart) / MILLIS_PER_WEEK) + 1;
 
         for (int i = 0; i < totalWeeks; i++) {
             long weekStart = earliestWeekStart + (i * MILLIS_PER_WEEK);
-            long weekEnd = weekStart + MILLIS_PER_WEEK - 1; // last millisecond of Sunday
+            long weekEnd = weekStart + MILLIS_PER_WEEK - 1;
             weeks.add(new WeekRecord(i + 1, weekStart, weekEnd));
         }
 
-        // Newest week first
         java.util.Collections.reverse(weeks);
         return weeks;
     }

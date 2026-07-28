@@ -42,64 +42,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvWeeklyTitle" />
 
-    <TextView
-        android:id="@+id/tvSearchBy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Search by:"
-        android:textColor="#333333"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/weeklyHeaderDivider" />
-
-    <LinearLayout
-        android:id="@+id/llSearchInputs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        android:weightSum="3"
-        app:layout_constraintTop_toBottomOf="@id/tvSearchBy">
-
-        <EditText
-            android:id="@+id/etSearchDay"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/rounded_edittext"
-            android:gravity="center"
-            android:hint="DD"
-            android:inputType="number"
-            android:maxLength="2"
-            android:textColor="#000000" />
-
-        <EditText
-            android:id="@+id/etSearchMonth"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/rounded_edittext"
-            android:gravity="center"
-            android:hint="MM"
-            android:inputType="number"
-            android:maxLength="2"
-            android:textColor="#000000" />
-
-        <EditText
-            android:id="@+id/etSearchYear"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:background="@drawable/rounded_edittext"
-            android:gravity="center"
-            android:hint="YYYY"
-            android:inputType="number"
-            android:maxLength="4"
-            android:textColor="#000000" />
-    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvWeeklyRecords"
@@ -111,7 +53,7 @@
         app:layout_constraintBottom_toTopOf="@id/tvCopyrightWeekly"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/llSearchInputs" />
+        app:layout_constraintTop_toBottomOf="@id/weeklyHeaderDivider"/>
 
     <TextView
         android:id="@+id/tvCopyrightWeekly"

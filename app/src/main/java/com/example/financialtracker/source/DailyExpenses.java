@@ -2,6 +2,7 @@ package com.example.financialtracker.source;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -53,7 +54,14 @@ public class DailyExpenses extends AppCompatActivity {
 
         // --- NAVIGATION & SCREEN TRANSITIONS ---
         binding.btnBack.setOnClickListener(v -> finish());
-        binding.btnCalendar.setOnClickListener(v -> { /* TODO: view weekly summary of expenses */ });
+
+        binding.btnCalendar.setOnClickListener(v -> {
+            long weekStartMillis = getDatesOfSameWeek(System.currentTimeMillis()).get(0);
+            Intent intent = new Intent(this, DayOverview.class);
+            intent.putExtra(DayOverview.EXTRA_WEEK_START, weekStartMillis);
+            startActivity(intent);
+        });
+
         binding.btnAddExpense.setOnClickListener(v -> showRecordExpenseDialog());
     }
 

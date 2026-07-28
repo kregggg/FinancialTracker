@@ -1,13 +1,14 @@
 package com.example.financialtracker.source;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.financialtracker.database.SettingsManager;
 import com.example.financialtracker.databinding.MainDashboardActivityBinding;
 
-public class DashboardActivity extends AppCompatActivity {
+public class Dashboard extends AppCompatActivity {
 
     private MainDashboardActivityBinding binding;
     private SettingsManager settingsManager;
@@ -15,6 +16,11 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // in DashboardActivity.onCreate (or any single early entry point), after setContentView:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getWindow().getDecorView().setForceDarkAllowed(true);
+        }
 
         // 1. Inflate the layout using View Binding
         binding = MainDashboardActivityBinding.inflate(getLayoutInflater());
@@ -38,16 +44,14 @@ public class DashboardActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        binding.cardRecordIncome.setOnClickListener(v -> {
-            // TODO: Handle income recording navigation
-        });
+        binding.cardRecordIncome.setOnClickListener(v ->
+                startActivity(new Intent(this, RecordMenu.class)));
 
-        binding.cardExpensesSummary.setOnClickListener(v -> {
-            // TODO: Handle historical summary navigation
-        });
+        binding.cardExpensesSummary.setOnClickListener(v ->
+                startActivity(new Intent(this, MainSummary.class)));
 
         binding.cardSettings.setOnClickListener(v -> {
-            Intent intent = new Intent(this, SettingsActivity.class);
+            Intent intent = new Intent(this, Settings.class);
             startActivity(intent);
         });
     }
