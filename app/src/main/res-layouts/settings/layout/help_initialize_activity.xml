@@ -89,8 +89,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:text="This will be used a way to track your overall savings starting from the time that you an account."
+            android:textColor="#757575" />
+
+        <!-- New Quick Action Note -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quick Action:"
+            android:textColor="#424242"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Common expenses that are recorded almost daily. Placed in quick action for easier recording."
             android:textColor="#757575" />
 
         <TextView

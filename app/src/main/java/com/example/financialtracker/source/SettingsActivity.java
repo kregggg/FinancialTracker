@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.financialtracker.R;
 import com.example.financialtracker.database.DataBackupManager;
+import com.example.financialtracker.databinding.HelpInitializeActivityBinding;
 import com.example.financialtracker.databinding.MainSettingsActivityBinding;
 import com.example.financialtracker.databinding.QuickactionExpenseActivityBinding;
 import com.example.financialtracker.database.SettingsManager;
@@ -79,7 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
         binding.tvHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Help overlay panel initialization
+                showHelpOverlay();
             }
         });
 
@@ -245,75 +246,96 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    public boolean validateSave(){
+    public boolean validateSave() {
+        boolean valid = true;
+
         // Username
-        binding.etUsername.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                String username = binding.etUsername.getText().toString().trim();
-                if (username.isEmpty()) {
-                    binding.etUsername.setError("Please provide a username!");
-                }
-            }
-        });
+        String username = binding.etUsername.getText().toString().trim();
+        if (username.isEmpty()) {
+            binding.etUsername.setError("Please provide a username!");
+            valid = false;
+        }
 
         // Allowance Type
-        String type = binding.spinnerAllowanceType.getSelectedItem().toString();
+        String type = binding.spinnerAllowanceType.getSelectedItem() != null ?
+                binding.spinnerAllowanceType.getSelectedItem().toString() : "Weekly";
 
         // Days with classes
-        binding.etDaysWithClasses.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus){
-                try {
-                    int days = 0;
-                    String temp = binding.etDaysWithClasses.getText().toString().trim();
-                    if (temp.isEmpty()){
-                        binding.etDaysWithClasses.setError("Please fill in this field!");
-                    } else {
-                        days = Integer.parseInt(temp);
-
-                        if (days >= 7){
-                            binding.etDaysWithClasses.setError("Days with classes cannot exceed 7!");
-                        } else if (days <= 0 && binding.spinnerAllowanceType.getSelectedItem().toString().equalsIgnoreCase("DAILY")){
-                            binding.etDaysWithClasses.setError("You are required to have days with classes if allowance is set to daily.");
-                        }
-                    }
-                } catch (NumberFormatException e) {
-                    binding.etDaysWithClasses.setError("Days with classes field cannot contain letters or special characters!");
+        int days = 0;
+        String tempDays = binding.etDaysWithClasses.getText().toString().trim();
+        if (tempDays.isEmpty()) {
+            binding.etDaysWithClasses.setError("Please fill in this field!");
+            valid = false;
+        } else {
+            try {
+                days = Integer.parseInt(tempDays);
+                if (days > 7) {
+                    binding.etDaysWithClasses.setError("Days with classes cannot exceed 7!");
+                    valid = false;
+                } else if (days <= 0 && type.equalsIgnoreCase("Daily")) {
+                    binding.etDaysWithClasses.setError("Days with classes is required for daily allowance.");
+                    valid = false;
                 }
+            } catch (NumberFormatException e) {
+                binding.etDaysWithClasses.setError("Days with classes cannot contain letters or special characters!");
+                valid = false;
             }
-        });
+        }
 
-        // Allowance per allocation
-        binding.etSettingsAllowance.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus){
-                try {
-                    String temp = binding.etSettingsAllowance.getText().toString().trim();
-                    double allowance = 0;
-
-                    if (temp.isEmpty()){
-                        binding.etSettingsAllowance.setError("Please fill in this field!");
-                    } else {
-                        allowance = Double.parseDouble(temp);
-
-                        if (allowance < 0){
-                            binding.etSettingsAllowance.setError("Allowance cannot be set to a negative value!");
-                        }
-                    }
-                } catch (NumberFormatException e){
-                    binding.etSettingsAllowance.setError("Please fill out this field");
-
+        // Allowance amount
+        double allowance = 0;
+        String tempAllowance = binding.etSettingsAllowance.getText().toString().trim();
+        if (tempAllowance.isEmpty()) {
+            binding.etSettingsAllowance.setError("Please fill in this field!");
+            valid = false;
+        } else {
+            try {
+                allowance = Double.parseDouble(tempAllowance);
+                if (allowance < 0) {
+                    binding.etSettingsAllowance.setError("Allowance cannot be a negative value!");
+                    valid = false;
                 }
+            } catch (NumberFormatException e) {
+                binding.etSettingsAllowance.setError("Please enter a valid number.");
+                valid = false;
             }
-        });
+        }
 
-        // Save changes
-        String username = (binding.etUsername.getText().toString().isEmpty() ? binding.etUsername.getText().toString().trim() : null);
-        int days = (binding.etDaysWithClasses.getText().toString().isEmpty() ? Integer.parseInt(binding.etDaysWithClasses.getText().toString().trim()) : -1);
-        double allowance = (binding.etSettingsAllowance.getText().toString().isEmpty() ? Double.parseDouble(binding.etSettingsAllowance.getText().toString().trim()) : -1);
+        if (!valid) return false;
+
+        // Preserve both balances exactly as they are — see note below on why
+        // this can't use saveSettings() the way the old code did.
         double currentBalance = settingsManager.getCurrentBalance();
-
-        settingsManager.saveSettings(username, type, days, allowance, currentBalance, false);
+        double startingBalance = settingsManager.getStartingBalance();
+        settingsManager.restoreSettings(username, type, days, allowance, startingBalance, currentBalance, false);
 
         return true;
+    }
+
+    /**
+     * Same help overlay used in InitializeAccount — the setup fields and
+     * settings fields are the same data, so the same explanation applies.
+     */
+    private void showHelpOverlay() {
+        Dialog helpDialog = new Dialog(this);
+
+        HelpInitializeActivityBinding dialogBinding = HelpInitializeActivityBinding.inflate(getLayoutInflater());
+        helpDialog.setContentView(dialogBinding.getRoot());
+
+        if (helpDialog.getWindow() != null) {
+            helpDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.90);
+            helpDialog.getWindow().setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        dialogBinding.closeHelpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helpDialog.dismiss();
+            }
+        });
+
+        helpDialog.show();
     }
 
     private void exportBackup(Uri uri) {
