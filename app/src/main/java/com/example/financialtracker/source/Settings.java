@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.financialtracker.R;
 import com.example.financialtracker.database.DataBackupManager;
@@ -55,7 +56,7 @@ public class Settings extends AppCompatActivity {
 
         // Synchronize settings menu macro layouts with persistent cache state values
         updateQuickActionButtons();
-        updateDarkModeIndicator();
+        setupDarkModeSwitch();
 
         // --- NAVIGATION & SCREEN TRANSITIONS ---
 
@@ -123,7 +124,7 @@ public class Settings extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        updateDarkModeIndicator();
+        setupDarkModeSwitch();
     }
 
     /**
@@ -227,17 +228,6 @@ public class Settings extends AppCompatActivity {
 
         dialog.show();
     }
-
-    /*
-    TODO:
-        switch off button for dark mode
-        set the initial content of the following
-            - username (etUsername)
-            - allowance type (spinnerAllowanceType)
-            - days with classes (etDaysWithClasses)
-            - allocated allowance per time frame (etSettingsAllowance)
-        set action for button submit
-     */
 
     public void initializeValues(ArrayAdapter<CharSequence> adapter){
         updateQuickActionButtons();
@@ -377,11 +367,15 @@ public class Settings extends AppCompatActivity {
      * so this switch is read-only. It just reflects whatever the system is currently
      * doing, rather than letting the user flip something that wouldn't do anything.
      */
-    private void updateDarkModeIndicator() {
-        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        boolean isDarkModeActive = (nightModeFlags == Configuration.UI_MODE_NIGHT_YES);
+    private void setupDarkModeSwitch() {
+        binding.switchDarkMode.setEnabled(true);
+        binding.switchDarkMode.setChecked(settingsManager.isDarkModeEnabled());
 
-        binding.switchDarkMode.setChecked(isDarkModeActive);
-        binding.switchDarkMode.setEnabled(false);
+        binding.switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            settingsManager.setDarkModeEnabled(isChecked);
+            AppCompatDelegate.setDefaultNightMode(
+                    isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            );
+        });
     }
 }

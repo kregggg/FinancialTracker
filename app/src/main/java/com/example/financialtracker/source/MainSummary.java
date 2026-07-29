@@ -92,7 +92,8 @@ public class MainSummary extends AppCompatActivity {
         // NOTE: this assumption isn't defined anywhere else in the codebase yet —
         // if "savings" is meant to mean something narrower (e.g. allowance-only),
         // this is the one line to change.
-        double totalSavings = totalIncome - totalExpenses;
+        double startingBalance = settingsManager.getStartingBalance();
+        double totalSavings = startingBalance + totalIncome - totalExpenses;
         double currentBalance = settingsManager.getCurrentBalance();
 
         binding.tvTotalAllowanceValue.setText(String.format(Locale.US, "P%.2f", totalAllowance));

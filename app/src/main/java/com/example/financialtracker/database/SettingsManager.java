@@ -156,4 +156,8 @@ public class SettingsManager {
                 .putBoolean(KEY_DARK_MODE, isDarkMode)
                 .apply();
     }
+
+    public void setDarkModeEnabled(boolean isDarkMode) {
+        prefs.edit().putBoolean(KEY_DARK_MODE, isDarkMode).apply();
+    }
 }

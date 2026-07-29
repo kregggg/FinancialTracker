@@ -84,9 +84,9 @@ public class DailyExpenses extends AppCompatActivity {
 
         // --- DYNAMIC DATA SYNC ---
         // Dynamically rename Quick Action button labels to match what was configured in Settings
-        dialogBinding.btnAction1.setText(settingsManager.getQuickActionDescription(1));
-        dialogBinding.btnAction2.setText(settingsManager.getQuickActionDescription(2));
-        dialogBinding.btnAction3.setText(settingsManager.getQuickActionDescription(3));
+        bindQuickActionButton(dialogBinding.btnAction1, 1, dialogBinding);
+        bindQuickActionButton(dialogBinding.btnAction2, 2, dialogBinding);
+        bindQuickActionButton(dialogBinding.btnAction3, 3, dialogBinding);
 
         // --- OVERLAY MACRO INTERACTIVE TRIGGERS ---
 
@@ -402,5 +402,17 @@ public class DailyExpenses extends AppCompatActivity {
         EXPENSE,
         INCOME,
         ALL
+    }
+
+    private void bindQuickActionButton(com.google.android.material.button.MaterialButton button, int actionNumber, RecordExpenseActivityBinding dialogBinding) {
+        String description = settingsManager.getQuickActionDescription(actionNumber);
+
+        if (description == null) {
+            button.setVisibility(View.GONE);
+        } else {
+            button.setVisibility(View.VISIBLE);
+            button.setText(description);
+            button.setOnClickListener(v -> quickAction(actionNumber, dialogBinding));
+        }
     }
 }
