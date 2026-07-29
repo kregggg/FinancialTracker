@@ -9,18 +9,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:padding="24dp"
+        android:fitsSystemWindows="true">
 
         <!-- Title Bar -->
         <ImageView
             android:id="@+id/btnBackSettings"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@android:drawable/ic_menu_revert"
+            app:srcCompat="@drawable/arrow_back"
+            app:tint="#333333"
             app:layout_constraintBottom_toBottomOf="@id/tvSettingsTitle"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvSettingsTitle"
-            app:tint="#333333" />
+            app:layout_constraintTop_toTopOf="@id/tvSettingsTitle" />
 
         <TextView
             android:id="@+id/tvSettingsTitle"
@@ -270,7 +271,7 @@
             android:layout_width="140dp"
             android:layout_height="54dp"
             android:layout_marginTop="28dp"
-            android:text="Submit"
+            android:text="Save"
             android:textAllCaps="false"
             android:textSize="16sp"
             app:backgroundTint="#333333"

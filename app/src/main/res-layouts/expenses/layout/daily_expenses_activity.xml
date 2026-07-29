@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:fitsSystemWindows="true">
 
     <ImageView
         android:id="@+id/btnBack"
@@ -15,7 +16,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        android:src="@android:drawable/ic_menu_revert"
+        android:src="@drawable/arrow_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#000000" />

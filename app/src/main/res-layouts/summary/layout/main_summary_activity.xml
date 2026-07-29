@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    android:fitsSystemWindows="true">
 
     <!-- Sticky footer button — anchored to the screen, not the scroll content -->
     <com.google.android.material.button.MaterialButton
@@ -57,7 +58,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:src="@android:drawable/ic_menu_revert"
+                android:src="@drawable/arrow_back"
                 app:tint="#000000"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
