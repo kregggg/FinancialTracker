@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId = "com.example.financialtracker"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -43,7 +43,7 @@ android {
 
     sourceSets {
         getByName("main") {
-            res.setSrcDirs(
+            res.srcDirs(
                 listOf(
                     "src/main/res",
                     "src/main/res-layouts/dashboard",

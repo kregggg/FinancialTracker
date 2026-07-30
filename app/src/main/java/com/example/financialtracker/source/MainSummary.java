@@ -69,37 +69,28 @@ public class MainSummary extends AppCompatActivity {
     }
 
     // =====================================================================
-    // --- TOP CARD: Total Allowance / Expenses / Savings / Balance ---
+    // --- TOP CARD: Total Expenses / Income / Current Balance ---
     // =====================================================================
 
     private void updateTotalsCard() {
-        double totalAllowance = 0;
         double totalIncome = 0;
         double totalExpenses = 0;
 
         for (Transaction t : transactions) {
             if ("INCOME".equalsIgnoreCase(t.getTransactionType())) {
                 totalIncome += t.getAmount();
-                if ("Allowance".equalsIgnoreCase(t.getCategory())) {
-                    totalAllowance += t.getAmount();
-                }
             } else if ("EXPENSE".equalsIgnoreCase(t.getTransactionType())) {
                 totalExpenses += t.getAmount();
             }
         }
 
-        // Savings = everything earned minus everything spent.
-        // NOTE: this assumption isn't defined anywhere else in the codebase yet —
-        // if "savings" is meant to mean something narrower (e.g. allowance-only),
-        // this is the one line to change.
         double startingBalance = settingsManager.getStartingBalance();
-        double totalSavings = startingBalance + totalIncome - totalExpenses;
-        double currentBalance = settingsManager.getCurrentBalance();
+        double currentBalance = startingBalance + totalIncome - totalExpenses;
 
-        binding.tvTotalAllowanceValue.setText(String.format(Locale.US, "P%.2f", totalAllowance));
-        binding.tvTotalExpensesValue.setText(String.format(Locale.US, "P%.2f", totalExpenses));
-        binding.tvTotalSavingsValue.setText(String.format(Locale.US, "P%.2f", totalSavings));
-        binding.tvCurrentBalanceValue.setText(String.format(Locale.US, "P%.2f", currentBalance));
+        // Using "P%,.2f" adds comma separators for thousands (e.g., P1,234.56)
+        binding.tvTotalExpensesValue.setText(String.format(Locale.US, "P%,.2f", totalExpenses));
+        binding.tvTotalIncomeValue.setText(String.format(Locale.US, "P%,.2f", totalIncome));
+        binding.tvCurrentBalanceValue.setText(String.format(Locale.US, "P%,.2f", currentBalance));
     }
 
     // =====================================================================
@@ -110,18 +101,19 @@ public class MainSummary extends AppCompatActivity {
         Map<String, Double> totalsByCategory = groupByCategory("EXPENSE");
         double grandTotal = sumValues(totalsByCategory);
 
-        renderPieChart(binding.pieChartExpenses, totalsByCategory);
+        renderPieChart(binding.pieChartExpenses, totalsByCategory, "No expenses recorded yet.");
         renderBreakdownList(binding.rvExpensesBreakdown, totalsByCategory, grandTotal);
     }
 
     // =====================================================================
-    // --- INCOME: breakdown list (no chart in this layout, list only) ---
+    // --- INCOME: Pie chart + breakdown list ---
     // =====================================================================
 
     private void updateIncomeBreakdown() {
         Map<String, Double> totalsByCategory = groupByCategory("INCOME");
         double grandTotal = sumValues(totalsByCategory);
 
+        renderPieChart(binding.pieChartIncome, totalsByCategory, "No income recorded yet.");
         renderBreakdownList(binding.rvIncomeBreakdown, totalsByCategory, grandTotal);
     }
 
@@ -153,10 +145,10 @@ public class MainSummary extends AppCompatActivity {
         return sum;
     }
 
-    private void renderPieChart(PieChart pieChart, Map<String, Double> totalsByCategory) {
+    private void renderPieChart(PieChart pieChart, Map<String, Double> totalsByCategory, String emptyMessage) {
         if (totalsByCategory.isEmpty()) {
             pieChart.clear();
-            pieChart.setNoDataText("No expenses recorded yet.");
+            pieChart.setNoDataText(emptyMessage);
             pieChart.invalidate();
             return;
         }
@@ -177,7 +169,7 @@ public class MainSummary extends AppCompatActivity {
         pieChart.setData(data);
         pieChart.setUsePercentValues(true);
         pieChart.getDescription().setEnabled(false);
-        pieChart.getLegend().setEnabled(false); // handled by rvExpensesBreakdown instead
+        pieChart.getLegend().setEnabled(false); // handled by breakdown list instead
         pieChart.setHoleRadius(0f);
         pieChart.setTransparentCircleRadius(0f);
         pieChart.invalidate(); // required every time setData() is called, not just once

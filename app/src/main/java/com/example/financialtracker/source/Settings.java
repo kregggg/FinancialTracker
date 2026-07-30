@@ -160,7 +160,7 @@ public class Settings extends AppCompatActivity {
         // Set up the category spinner adapter inside the dialog popup card layout container
         ArrayAdapter<CharSequence> dialogSpinnerAdapter = ArrayAdapter.createFromResource(
                 this,
-                R.array.allowance_options, // Using allowance options or a dedicated expense array
+                R.array.expense_types, // Using allowance options or a dedicated expense array
                 R.layout.spinner_item
         );
         dialogSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

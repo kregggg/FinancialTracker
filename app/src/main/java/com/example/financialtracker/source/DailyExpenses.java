@@ -305,9 +305,9 @@ public class DailyExpenses extends AppCompatActivity {
         savedWeek -= spentWeek;
 
         // Assign uniform layout display values with currency indicator text
-        binding.tvTotalSpentToday.setText(String.format(Locale.US, "P%.2f", spentToday));
-        binding.tvTotalSpentWeek.setText(String.format(Locale.US, "P%.2f", spentWeek));
-        binding.tvTotalWeeklySavings.setText(String.format(Locale.US, "P%.2f", savedWeek));
+        binding.tvTotalSpentToday.setText(String.format(Locale.US, "P%,.2f", spentToday));
+        binding.tvTotalSpentWeek.setText(String.format(Locale.US, "P%,.2f", spentWeek));
+        binding.tvTotalWeeklySavings.setText(String.format(Locale.US, "P%,.2f", savedWeek));
     }
 
     public double getSpentByDate(Long date){

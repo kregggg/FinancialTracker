@@ -79,9 +79,9 @@ public class DailySummary extends AppCompatActivity {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy (EEE)", Locale.US);
         binding.tvRecordDate.setText(dateFormat.format(new Date(dayStartMillis)));
-        binding.tvRecordIncome.setText(String.format(Locale.US, "P%.2f", income));
-        binding.tvRecordExpenses.setText(String.format(Locale.US, "P%.2f", expenses));
-        binding.tvRecordSavings.setText(String.format(Locale.US, "P%.2f", income - expenses));
+        binding.tvRecordIncome.setText(String.format(Locale.US, "P%,.2f", income));
+        binding.tvRecordExpenses.setText(String.format(Locale.US, "P%,.2f", expenses));
+        binding.tvRecordSavings.setText(String.format(Locale.US, "P%,.2f", income - expenses));
 
         adapter.updateData(dayTransactions);
     }

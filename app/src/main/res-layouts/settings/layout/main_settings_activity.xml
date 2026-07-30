@@ -1,34 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    android:fitsSystemWindows="true">
 
+    <!-- Outer Padding Container for Screen Margins -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="24dp"
-        android:fitsSystemWindows="true">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Title Bar -->
+        <!-- ================= FIXED HEADER ================= -->
         <ImageView
             android:id="@+id/btnBackSettings"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            app:srcCompat="@drawable/arrow_back"
-            app:tint="#333333"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintBottom_toBottomOf="@id/tvSettingsTitle"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvSettingsTitle" />
+            app:layout_constraintTop_toTopOf="@id/tvSettingsTitle"
+            app:srcCompat="@drawable/arrow_back"
+            app:tint="#333333" />
 
         <TextView
             android:id="@+id/tvSettingsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:text="Settings"
             android:textColor="#000000"
             android:textSize="24sp"
@@ -42,268 +48,290 @@
             android:layout_height="1dp"
             android:layout_marginTop="16dp"
             android:background="#E0E0E0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvSettingsTitle" />
 
-        <!-- Dark Mode Row -->
-        <TextView
-            android:id="@+id/lblDarkMode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Dark Mode"
-            android:textColor="#333333"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dividerSettings" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switchDarkMode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/lblDarkMode"
+        <!-- ================= SCROLLABLE CONTENT ================= -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/lblDarkMode" />
-
-        <!-- Username Input -->
-        <TextView
-            android:id="@+id/lblUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Username"
-            android:textColor="#333333"
-            android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lblDarkMode" />
+            app:layout_constraintTop_toBottomOf="@id/dividerSettings">
 
-        <EditText
-            android:id="@+id/etUsername"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_input_outline"
-            android:hint="ex. Juan"
-            android:inputType="textPersonName"
-            android:paddingHorizontal="12dp"
-            android:textColor="#000000"
-            android:textColorHint="#9E9E9E"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/lblUsername" />
-
-        <!-- Allowance Type & Days Row -->
-        <LinearLayout
-            android:id="@+id/rowAllowanceDetails"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            app:layout_constraintTop_toBottomOf="@id/etUsername">
-
-            <LinearLayout
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:paddingVertical="16dp">
 
+                <!-- Dark Mode Row -->
                 <TextView
-                    android:id="@+id/lblAllowanceType"
+                    android:id="@+id/lblDarkMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Allowance Type"
+                    android:text="Dark Mode"
                     android:textColor="#333333"
-                    android:textSize="14sp" />
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <Spinner
-                    android:id="@+id/spinnerAllowanceType"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_input_outline"
-                    android:paddingHorizontal="8dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/lblDaysWithClasses"
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchDarkMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Days w/ classes"
+                    app:layout_constraintBottom_toBottomOf="@id/lblDarkMode"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/lblDarkMode" />
+
+                <!-- Username Input -->
+                <TextView
+                    android:id="@+id/lblUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="Username"
                     android:textColor="#333333"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lblDarkMode" />
 
                 <EditText
-                    android:id="@+id/etDaysWithClasses"
+                    android:id="@+id/etUsername"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input_outline"
-                    android:hint="5"
-                    android:inputType="number"
+                    android:hint="ex. Juan"
+                    android:inputType="textPersonName"
                     android:paddingHorizontal="12dp"
                     android:textColor="#000000"
                     android:textColorHint="#9E9E9E"
-                    android:textSize="16sp" />
-            </LinearLayout>
-        </LinearLayout>
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toBottomOf="@id/lblUsername" />
 
-        <!-- Allowance Field -->
-        <TextView
-            android:id="@+id/lblSettingsAllowance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Allowance"
-            android:textColor="#333333"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rowAllowanceDetails" />
+                <!-- Allowance Type & Days Row -->
+                <LinearLayout
+                    android:id="@+id/rowAllowanceDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    app:layout_constraintTop_toBottomOf="@id/etUsername">
 
-        <EditText
-            android:id="@+id/etSettingsAllowance"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_input_outline"
-            android:hint="ex. 200"
-            android:inputType="numberDecimal"
-            android:paddingHorizontal="12dp"
-            android:textColor="#000000"
-            android:textColorHint="#9E9E9E"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/lblSettingsAllowance" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-        <!-- Export & Import Buttons (Side-by-side) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnExportData"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="6dp"
-            android:text="Export Data"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            app:backgroundTint="#333333"
-            app:cornerRadius="8dp"
-            app:layout_constraintEnd_toStartOf="@id/btnImportData"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etSettingsAllowance" />
+                        <TextView
+                            android:id="@+id/lblAllowanceType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Allowance Type"
+                            android:textColor="#333333"
+                            android:textSize="14sp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnImportData"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="20dp"
-            android:text="Import Data"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            app:backgroundTint="#333333"
-            app:cornerRadius="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btnExportData"
-            app:layout_constraintTop_toBottomOf="@id/etSettingsAllowance" />
+                        <Spinner
+                            android:id="@+id/spinnerAllowanceType"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_input_outline"
+                            android:paddingHorizontal="8dp" />
+                    </LinearLayout>
 
-        <!-- Divider Line Below Export/Import -->
-        <View
-            android:id="@+id/dividerImportExport"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="20dp"
-            android:background="#E0E0E0"
-            app:layout_constraintTop_toBottomOf="@id/btnExportData" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-        <!-- Quick Actions Container -->
-        <LinearLayout
-            android:id="@+id/containerQuickActions"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dividerImportExport">
+                        <TextView
+                            android:id="@+id/lblDaysWithClasses"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Days w/ classes"
+                            android:textColor="#333333"
+                            android:textSize="14sp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnQuickAction1"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginBottom="12dp"
-                android:text="Action 1"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                app:backgroundTint="#333333"
-                app:cornerRadius="8dp" />
+                        <EditText
+                            android:id="@+id/etDaysWithClasses"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_input_outline"
+                            android:hint="5"
+                            android:inputType="number"
+                            android:paddingHorizontal="12dp"
+                            android:textColor="#000000"
+                            android:textColorHint="#9E9E9E"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnQuickAction2"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginBottom="12dp"
-                android:text="Action 2"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                app:backgroundTint="#333333"
-                app:cornerRadius="8dp" />
+                <!-- Allowance Field -->
+                <TextView
+                    android:id="@+id/lblSettingsAllowance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Allowance"
+                    android:textColor="#333333"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/rowAllowanceDetails" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnQuickAction3"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:text="Action 3"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                app:backgroundTint="#333333"
-                app:cornerRadius="8dp" />
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/etSettingsAllowance"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_outline"
+                    android:hint="ex. 200"
+                    android:inputType="numberDecimal"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="#000000"
+                    android:textColorHint="#9E9E9E"
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toBottomOf="@id/lblSettingsAllowance" />
 
-        <!-- Bottom Action Row: Help & Submit -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSubmitSettings"
-            android:layout_width="140dp"
-            android:layout_height="54dp"
-            android:layout_marginTop="28dp"
-            android:text="Save"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            app:backgroundTint="#333333"
-            app:cornerRadius="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/containerQuickActions" />
+                <!-- Export & Import Buttons -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExportData"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="Export Data"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:backgroundTint="#333333"
+                    app:cornerRadius="8dp"
+                    app:layout_constraintEnd_toStartOf="@id/btnImportData"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/etSettingsAllowance" />
 
-        <TextView
-            android:id="@+id/tvHelp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:text="Help"
-            android:textColor="#555555"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@id/btnSubmitSettings"
-            app:layout_constraintEnd_toStartOf="@id/btnSubmitSettings"
-            app:layout_constraintTop_toTopOf="@id/btnSubmitSettings" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnImportData"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginTop="20dp"
+                    android:text="Import Data"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:backgroundTint="#333333"
+                    app:cornerRadius="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/btnExportData"
+                    app:layout_constraintTop_toBottomOf="@id/etSettingsAllowance" />
 
-        <!-- Footer Copyright -->
-        <TextView
-            android:id="@+id/tvCopyrightSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="16dp"
-            android:text="Copyright © 2026 kreggg. All rights reserved."
-            android:textColor="#9E9E9E"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnSubmitSettings" />
+                <!-- Divider Line Below Export/Import -->
+                <View
+                    android:id="@+id/dividerImportExport"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#E0E0E0"
+                    app:layout_constraintTop_toBottomOf="@id/btnExportData" />
+
+                <!-- Quick Actions Container -->
+                <LinearLayout
+                    android:id="@+id/containerQuickActions"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/dividerImportExport">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnQuickAction1"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginBottom="12dp"
+                        android:text="Action 1"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        app:backgroundTint="#333333"
+                        app:cornerRadius="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnQuickAction2"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginBottom="12dp"
+                        android:text="Action 2"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        app:backgroundTint="#333333"
+                        app:cornerRadius="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnQuickAction3"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="Action 3"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        app:backgroundTint="#333333"
+                        app:cornerRadius="8dp" />
+                </LinearLayout>
+
+                <!-- Bottom Action Row: Help & Submit -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSubmitSettings"
+                    android:layout_width="140dp"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="28dp"
+                    android:text="Save"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:backgroundTint="#333333"
+                    app:cornerRadius="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/containerQuickActions" />
+
+                <TextView
+                    android:id="@+id/tvHelp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:text="Help"
+                    android:textColor="#555555"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@id/btnSubmitSettings"
+                    app:layout_constraintEnd_toStartOf="@id/btnSubmitSettings"
+                    app:layout_constraintTop_toTopOf="@id/btnSubmitSettings" />
+
+                <!-- Footer Copyright -->
+                <TextView
+                    android:id="@+id/tvCopyrightSettings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="Copyright © 2026 kreggg. All rights reserved."
+                    android:textColor="#9E9E9E"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/btnSubmitSettings" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,6 +23,7 @@ import com.example.financialtracker.databinding.ReceiveAllowanceActivityBinding;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class RecordMenu extends AppCompatActivity {
 
@@ -57,7 +59,7 @@ public class RecordMenu extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        populateTransactions(); // keep allowanceClaimed() accurate if the user backs out and returns
+        populateTransactions();
     }
 
     private void processAllowanceLogic() {
@@ -97,7 +99,7 @@ public class RecordMenu extends AppCompatActivity {
         dialog.setContentView(dialogBinding.getRoot());
         setupOverlayWindow(dialog);
 
-        dialogBinding.etAllowanceAmount.setText(String.valueOf(settingsManager.getAllowanceAmount()));
+        dialogBinding.etAllowanceAmount.setText(String.format(Locale.US, "%.2f", settingsManager.getAllowanceAmount()));
 
         dialogBinding.btnCancelAllowance.setOnClickListener(v -> dialog.dismiss());
         dialogBinding.btnSaveAllowance.setOnClickListener(v -> {
@@ -137,8 +139,39 @@ public class RecordMenu extends AppCompatActivity {
         dialog.setContentView(dialogBinding.getRoot());
         setupOverlayWindow(dialog);
 
-        String[] sources = getResources().getStringArray(R.array.income_sources);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, sources);
+        // 1. Fetch sources and filter out "Allowance" (index 0) so it doesn't show in Additional Income
+        String[] allSources = getResources().getStringArray(R.array.income_sources);
+        List<String> filteredSources = new ArrayList<>();
+        for (int i = 1; i < allSources.length; i++) { // Start at index 1 to skip Allowance
+            filteredSources.add(allSources[i]);
+        }
+
+        // 2. Set up adapter forcing black text and a clean white background for the dropdown menu
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_item,
+                filteredSources
+        ) {
+            @Override
+            public android.view.View getView(int position, android.view.View convertView, android.view.ViewGroup parent) {
+                android.view.View view = super.getView(position, convertView, parent);
+                if (view instanceof TextView) {
+                    ((TextView) view).setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+
+            @Override
+            public android.view.View getDropDownView(int position, android.view.View convertView, android.view.ViewGroup parent) {
+                android.view.View view = super.getDropDownView(position, convertView, parent);
+                view.setBackgroundColor(Color.WHITE); // Force item background to white
+                if (view instanceof TextView) {
+                    ((TextView) view).setTextColor(Color.BLACK); // Force item text to black
+                }
+                return view;
+            }
+        };
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dialogBinding.spinnerSource.setAdapter(adapter);
 
         dialogBinding.btnCancelAdditional.setOnClickListener(v -> dialog.dismiss());
@@ -163,7 +196,13 @@ public class RecordMenu extends AppCompatActivity {
                 return;
             }
 
-            String source = dialogBinding.spinnerSource.getSelectedItem().toString();
+            // 3. Null-safe check before assigning the selected item to source
+            Object selectedObject = dialogBinding.spinnerSource.getSelectedItem();
+            if (selectedObject == null) {
+                Toast.makeText(this, "Please select a category source.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String source = selectedObject.toString();
 
             Transaction additionalIncome = new Transaction(
                     desc, amount, source, System.currentTimeMillis(), "INCOME"
@@ -246,7 +285,7 @@ public class RecordMenu extends AppCompatActivity {
             }
 
             for (Transaction today : basis){
-                if (today.getTransactionType().equalsIgnoreCase("INCOME") && today.getCategory().equalsIgnoreCase("ALLOWANCE")){
+                if (today.getTransactionType().equalsIgnoreCase("INCOME") && today.getCategory().equalsIgnoreCase(allowance)){
                     return true;
                 }
             }
